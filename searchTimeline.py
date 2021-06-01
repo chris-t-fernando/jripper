@@ -2,6 +2,7 @@ import tweepy
 import json
 from tweepy.parsers import JSONParser
 import datetime
+import boto3
 
 def unescape(s):
     s = s.replace("&lt;", "<")
