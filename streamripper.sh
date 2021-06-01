@@ -64,6 +64,7 @@ rm "$ARTIST - $TITLE.aac"
 
 # generat spectrum analyser
 sox "/triplej/www/stage1/$ARTIST - $TITLE.mp3" -n trim 0 1 stats : restart 2> "/triplej/www/stage1/$ARTIST - $TITLE.mp3.spectrum"
+api_key=$(aws ssm get-parameter --name=/jtweets/pushover/api_key --with-decryption | jq -r '.Parameter.Value')
+app_id=$(aws ssm get-parameter --name=/jtweets/pushover/app_id | jq -r '.Parameter.Value')
 
-# tell me that its all done
-curl -s --form-string "token=aJcfJv8iqShDjjwXdg5A5eCRbwqvsH" --form-string "user=gCcFJwgAw48scLCTiR9Q2om92jGqUP" --form-string "message=Finished writing LATW $ARTIST $TITLE ${ERRORNOTES}"  --form-string "url=http://j.diamonds.ro.lt/" --form-string "url_title=Editor" https://api.pushover.net/1/messages.json
+curl -s --form-string "token=$api_key" --form-string "user=$app_id" --form-string "message=Finished writing LATW $ARTIST $TITLE ${ERRORNOTES}"  --form-string "url=http://j.diamonds.ro.lt/" --form-string "url_title=Editor" https://api.pushover.net/1/messages.json
