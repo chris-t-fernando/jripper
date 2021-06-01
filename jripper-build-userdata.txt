@@ -12,14 +12,15 @@ sudo mkdir /triplej/www/stage0
 sudo mkdir /triplej/www/stage1
 sudo mkdir /triplej/www/stage2
 sudo mkdir /triplej/www/stage3
+sudo chown -R ubuntu:ubuntu /triplej
 sudo curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
 sudo python2 get-pip.py
 pip install tweepy
 pip install boto3
 sudo sed -i 's/short_open_tag = Off/short_open_tag = On/g' /etc/php/7.4/cli/php.ini
 sudo sed -i 's/short_open_tag = Off/short_open_tag = On/g' /etc/php/7.4/apache2/php.ini
-sudo sed -i 's/display_errors = Off/display_errors = On;/g' /etc/php/7.4/cli/php.ini
-sudo sed -i 's/display_errors = Off/display_errors = On;/g' /etc/php/7.4/apache2/php.ini
+sudo sed -i 's/display_errors = Off/display_errors = On);/g' /etc/php/7.4/cli/php.ini
+sudo sed -i 's/display_errors = Off/display_errors = On);/g' /etc/php/7.4/apache2/php.ini
 echo "00 21 * * * /triplej/checkspace.sh
 00 * * * *  aws s3 mv /triplej/www/stage3/ s3://j-diamonds-ro-lt/ --include \"*\" --recursive
 30 22 * * 1,7  aws s3 sync /triplej/www/stage1/ s3://j-diamonds-ro-lt/raw --include \"*\" --exclude \"*.spectrum\"
@@ -29,7 +30,6 @@ echo "00 21 * * * /triplej/checkspace.sh
 " > mycron
 crontab -u ubuntu mycron
 rm mycron
-
 echo "
 <VirtualHost *:80>
         ServerAdmin webmaster@localhost
