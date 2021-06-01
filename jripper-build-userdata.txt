@@ -12,8 +12,6 @@ sudo mkdir /triplej/www/stage0
 sudo mkdir /triplej/www/stage1
 sudo mkdir /triplej/www/stage2
 sudo mkdir /triplej/www/stage3
-sudo chown -R ubuntu:www-data /triplej
-sudo chmod -R u+rwx,g+rwxs,o+r-wx /triplej/
 sudo curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
 sudo python2 get-pip.py
 pip install tweepy
@@ -49,4 +47,6 @@ echo "
 " | sudo tee -a /etc/apache2/sites-available/j.conf > /dev/null
 sudo a2ensite j.conf
 sudo systemctl reload apache2
+sudo chown -R ubuntu:www-data /triplej
+sudo chmod -R u+rwx,g+rwxs,o+r-wx /triplej/
 sudo aws ssm put-parameter --name /jripper-build/server-build-status --value stage1 --overwrite
