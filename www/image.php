@@ -1,4 +1,5 @@
 <?
+error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 
 $hSox = fopen("stage1/" . $_GET["src"] . ".spectrum", "r");
 
