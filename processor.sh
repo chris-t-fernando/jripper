@@ -60,7 +60,7 @@ yes | rm "/triplej/www/stage2/$1"
 yes | rm "/triplej/www/stage2/$1.spectrum"
 
 #cp "/triplej/www/stage3/$1" "/triplej/www/online/$1" 
-aws s3 mv "/triplej/www/stage3/$1" s3://fdoarchive/chris/rips/
+aws s3 mv "/triplej/www/stage3/$1" s3://j-diamonds-ro-l/
 
 api_key=$(aws ssm get-parameter --name=/jtweets/pushover/api_key --with-decryption | jq -r '.Parameter.Value')
 app_id=$(aws ssm get-parameter --name=/jtweets/pushover/app_id | jq -r '.Parameter.Value')
