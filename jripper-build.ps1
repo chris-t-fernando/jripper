@@ -46,7 +46,7 @@ $userDataFile = 'jripper-build-userdata.txt'
 $Script = Get-Content -Raw jripper-build-userdata.txt
 $UserData = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($Script))
 
-$instanceRequest = New-EC2Instance -ImageId ami-03d5c68bab01f3496 -MinCount 1 -MaxCount 1 -KeyName chris2 -SecurityGroupId sg-8b5c50ee -InstanceType t3a.medium -userdata $userData -iaminstanceprofile_name jenkins-build-ec2roleapplied
+$instanceRequest = New-EC2Instance -ImageId ami-03d5c68bab01f3496 -MinCount 1 -MaxCount 1 -KeyName chris2 -SecurityGroupId sg-8b5c50ee -InstanceType t2.nano -userdata $userData -iaminstanceprofile_name jenkins-build-ec2roleapplied
 
 debugecho ("Reservation ID is " + $instanceRequest.reservationId  + ", new instance ID is " + $instanceRequest.instances[0].instanceId)
 start-sleep 10
