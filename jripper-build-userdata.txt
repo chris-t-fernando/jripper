@@ -1,0 +1,51 @@
+#!/bin/bash -xe
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+sudo apt-get update
+sudo apt-get install awscli php php-gd eyed3 apache2 ffmpeg sox streamripper python jq libsox-fmt-mp3 --yes
+aws configure set default.region us-west-2
+sudo su -c "aws configure set default.region us-west-2" ubuntu
+sudo aws ssm put-parameter --name /jripper-build/server-build-status-message --value "Installed packages" --overwrite
+sudo mkdir /triplej
+git -C /triplej/ clone https://github.com/chris-t-fernando/jripper.git
+mv /triplej/jripper/* /triplej/
+sudo mkdir /triplej/www/stage0
+sudo mkdir /triplej/www/stage1
+sudo mkdir /triplej/www/stage2
+sudo mkdir /triplej/www/stage3
+sudo chown -R ubuntu:ubuntu /triplej
+sudo curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
+sudo python2 get-pip.py
+pip install tweepy
+pip install boto3
+sudo sed -i 's/short_open_tag = Off/short_open_tag = On/g' /etc/php/7.4/cli/php.ini
+sudo sed -i 's/short_open_tag = Off/short_open_tag = On/g' /etc/php/7.4/apache2/php.ini
+sudo sed -i 's/display_errors = Off/display_errors = On);/g' /etc/php/7.4/cli/php.ini
+sudo sed -i 's/display_errors = Off/display_errors = On);/g' /etc/php/7.4/apache2/php.ini
+echo "00 21 * * * /triplej/checkspace.sh
+00 * * * *  aws s3 mv /triplej/www/stage3/ s3://j-diamonds-ro-lt/ --include \"*\" --recursive
+30 22 * * 1,7  aws s3 sync /triplej/www/stage1/ s3://j-diamonds-ro-lt/raw --include \"*\" --exclude \"*.spectrum\"
+22 11 * * 1 python /projects/jplaystweets/getjplays.py
+55 19 * * 1 /triplej/streamripper.sh \"Catch all\" \"Catch all\"
+0 9 * * 1,2,3,4,5 python /projects/asx/avh.py
+" > mycron
+crontab -u ubuntu mycron
+rm mycron
+
+echo "
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /triplej/www
+        ServerName j.diamonds.ro.lt
+        <Directory \"/triplej/www\">
+                Options Indexes FollowSymLinks
+                AllowOverride None
+                Require all granted
+        </Directory>
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+" | sudo tee -a /etc/apache2/sites-available/j.conf > /dev/null
+sudo a2ensite j.conf
+sudo systemctl reload apache2
+sudo aws ssm put-parameter --name /jripper-build/server-build-status --value stage1 --overwrite
