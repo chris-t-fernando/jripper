@@ -13,11 +13,12 @@ def unescape(s):
 # set up return JSON
 outJSON = { "artist": "", "song": "", "error": 0, "errorMessage": "", "tweetText": "" }
 
-# credentials
-consumer_key="fr0pHhPsbhDF6L2ooFeHTf9Tk"
-consumer_secret="oP3PX9GpaBegzCKoE2zPoDI56R75kLDdV2jr3424DAFdpNbj6G"
-access_token="756415056-0TRTrK0GviMzWh4oNcKJQ6jn9pkvBEXsf0oDZcRi"
-access_token_secret="o99gHS8q3r4OYcT5Eultdy3aCOSdXLEbO0ut5LqP3QmdB"
+# pull access token details from SSM parameter store
+ssm = boto3.client('ssm')
+consumer_key = ssm.get_parameter(Name='/jtweets/tweepy/consumer_key', WithDecryption=True).get("Parameter").get("Value")
+consumer_secret = ssm.get_parameter(Name='/jtweets/tweepy/consumer_secret', WithDecryption=True).get("Parameter").get("Value")
+access_token = ssm.get_parameter(Name='/jtweets/tweepy/access_token', WithDecryption=True).get("Parameter").get("Value")
+access_token_secret = ssm.get_parameter(Name='/jtweets/tweepy/access_token_secret', WithDecryption=True).get("Parameter").get("Value")
 
 # login
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
